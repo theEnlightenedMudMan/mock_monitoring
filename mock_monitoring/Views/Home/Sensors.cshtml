@@ -1,0 +1,34 @@
+@{
+    ViewData["Title"] = "Sensors";
+}
+
+@model List<Sensor>
+
+
+<div class="text-center">
+    <h1 class="display-4">Sensors</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Sensor ID</th>
+                <th>Name</th>
+                <th>Mac Address</th>
+                <th>Profile</th>
+                <th>Enable</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sensor in Model)
+            {
+                <tr>
+                    <td>@sensor.Id</td>
+                    <td>@sensor.Name</td>
+                    <td>@sensor.MacAddress</td>
+                    <td>@sensor.ProfileId</td>
+                    <td>@sensor.Enable</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a asp-action="Index" class="btn btn-secondary">Back to Home</a>
+</div>

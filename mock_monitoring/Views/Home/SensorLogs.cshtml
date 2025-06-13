@@ -1,0 +1,31 @@
+@{
+    ViewData["Title"] = "Sensor Log";
+}
+
+@model List<SensorLog>
+
+<div class="text-center">
+    <h1 class="display-4">Sensor Log</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Sensor ID</th>
+                <th>Timestamp</th>
+                <th>Temperature</th>
+                <th>Enable</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in Model)
+            {
+                <tr>
+                    <td>@log.SensorId</td>
+                    <td>@log.Timestamp </td>
+                    <td>@log.Temp</td>
+                    <td>@log.Enable</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a asp-action="Sensors" class="btn btn-secondary">Back to Sensors</a>
+</div>
