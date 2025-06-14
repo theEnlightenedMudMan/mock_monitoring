@@ -22,7 +22,7 @@ builder.Services.AddDbContext<MonitoringDbContext>(options =>
 });
 
 
-builder.Services.AddScoped<SensorRepository>(); // Register ISensorRepository
+builder.Services.AddScoped<ISensorRepository, SensorRepository>(); // Register ISensorRepository
 // builder.Services.AddScoped<ISensorService, SensorService>();
 
 builder.Services.AddHostedService<EventGeneratorService>();

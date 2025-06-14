@@ -1,56 +1,31 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-
 using mock_monitoring.Models;
+using mock_monitoring.Repository;
+using mock_monitoring.Interfaces;
+
 namespace mock_monitoring.Mock_Sensor;
 
-public class SensorDataGeneratorService : BackgroundService
+public class SensorDataGeneratorService(IServiceProvider serviceProvider) : BackgroundService
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly TimeSpan _interval = TimeSpan.FromSeconds(120);
-    private readonly Random _random = new Random();
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private readonly TimeSpan _interval = TimeSpan.FromSeconds(60);
 
-    public SensorDataGeneratorService(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
+    private ISensorRepository? _sensorRepository;
+    private readonly Random _random = new Random();
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            await GenerateMockSensorData(stoppingToken);
+            GenerateMockSensorData(stoppingToken);
             await Task.Delay(_interval, stoppingToken);
         }
     }
 
-    private async Task GenerateMockSensorData(CancellationToken stoppingToken)
+    private void GenerateMockSensorData(CancellationToken stoppingToken)
     {
-        // Create a new scope to resolve DbContext
+
         using var scope = _serviceProvider.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<MonitoringDbContext>();
-
-        var mockReading = new SensorLog
-        {
-            SensorId = 1,
-            Timestamp = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-            Temp = (float)(_random.NextDouble() * 35 + 15), // Random temperature between 15 and 50
-            Enable = true,
-            High = 30, //todo get from profile
-            Low = 45 // todo get from profile
-
-        };
-
-
-        context.SensorLog.Add(mockReading);
-        
-        await context.SaveChangesAsync(stoppingToken);
-
-
-        Console.WriteLine($"Added mock sensor: {mockReading.Id} at {DateTime.UtcNow}");
+        _sensorRepository = scope.ServiceProvider.GetRequiredService<ISensorRepository>();
+        _sensorRepository.AddReadingAsync<TemperatureSensor>(1, (float)(_random.NextDouble() * 35 + 15)).Wait();
     }
 }

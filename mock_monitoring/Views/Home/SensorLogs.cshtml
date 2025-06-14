@@ -1,3 +1,4 @@
+@using mock_monitoring.Types
 @{
     ViewData["Title"] = "Sensor Log";
 }
@@ -11,18 +12,24 @@
             <tr>
                 <th>Sensor ID</th>
                 <th>Timestamp</th>
+                <th>Low</th>
                 <th>Temperature</th>
+                <th>High</th>
                 <th>Enable</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var log in Model)
             {
-                <tr>
+                <tr class="@Status.getTableCSSClass(log.Status)">
                     <td>@log.SensorId</td>
                     <td>@log.Timestamp </td>
+                    <td>@log.Low</td>
                     <td>@log.Temp</td>
+                    <td>@log.High</td>
                     <td>@log.Enable</td>
+                    <td>@Status.GetStatusDescription(log.Status)</td>
                 </tr>
             }
         </tbody>

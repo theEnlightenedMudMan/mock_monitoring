@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.Design;
+
 
 namespace mock_monitoring.Models;
 
@@ -32,6 +32,8 @@ public abstract class Sensor
     public int Alarmen { get; set; } = 0;
 
     abstract public bool IsOutOfRange(float reading);
-
+    abstract public SensorLog addReading(float reading);
+    abstract public int getStatus(float reading);
+    abstract public int getQuality(float reading);
 
 }

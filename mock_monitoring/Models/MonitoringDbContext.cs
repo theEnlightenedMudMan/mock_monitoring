@@ -18,6 +18,7 @@ public class MonitoringDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
+        // TPH Sensor inheritance mapping
         modelBuilder.Entity<Sensor>()
                 .ToTable("Sensor")
                 .HasDiscriminator<int>("Type")

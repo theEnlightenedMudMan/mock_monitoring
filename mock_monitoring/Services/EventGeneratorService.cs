@@ -5,20 +5,14 @@ using mock_monitoring.Interfaces;
 using mock_monitoring.Repository;
 using System;
 
-public class EventGeneratorService : BackgroundService
+public class EventGeneratorService(IServiceProvider serviceProvider) : BackgroundService, IEventGeneratorService
 {
 
-    private readonly IServiceProvider _serviceProvider;
-    private  SensorRepository _sensorRepository;
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private  ISensorRepository? _sensorRepository;
     // private readonly ISensorService _sensorService;
 
     private readonly TimeSpan _interval = TimeSpan.FromSeconds(60);
-
-    public EventGeneratorService(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
-
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -34,18 +28,8 @@ public class EventGeneratorService : BackgroundService
     public async Task<bool> GenerateEventAsync<T>(int sensorId, double value) where T : Sensor
     {
         using var scope = _serviceProvider.CreateScope();
-        // var context = scope.ServiceProvider.GetRequiredService<MonitoringDbContext>();
-
-
-
-        // var sensor = context.Sensor.Single(s => s.Id == sensorId);
-        // if (sensor == null)
-        // {
-        //     throw new KeyNotFoundException($"Sensor with ID {sensorId} not found.");
-        // }
-        // _sensorRepository = new SensorRepository(context);
-
-        _sensorRepository = scope.ServiceProvider.GetRequiredService<SensorRepository>();
+        
+        _sensorRepository = scope.ServiceProvider.GetRequiredService<ISensorRepository>();
         // Retrieve the sensor from the repository
         var sensor = await _sensorRepository.GetSensorAsync<T>(sensorId);
         if (sensor == null)
@@ -55,13 +39,5 @@ public class EventGeneratorService : BackgroundService
         Console.WriteLine($"Sensor {sensor.Name} with ID {sensorId} has value {value}.");
 
         return false;
-
-
-        // if (await _sensorService.IsSensorOutOfRangeAsync<T>(sensorId, value))
-        // {
-        //     //todo add evnt to evnt table 
-        //     Console.WriteLine($"Event generated for sensor {sensorId} with value {value}.");
-
-        // }
     }
 }
